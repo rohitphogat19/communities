@@ -76,7 +76,8 @@ router.post('/register', async (request, response) => {
             }
         })
     } catch (error) {
-        response.status(500).json(err)
+        console.log(error);
+        response.status(500).json(error)
     }
 })
 
