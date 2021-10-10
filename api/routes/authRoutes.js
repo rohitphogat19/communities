@@ -5,6 +5,7 @@ const e = require('express')
 const User = require('../models/User')
 const emailValidator = require('email-validator');
 
+// Register User Function
 router.post('/register', async (request, response) => {
     const requestMail = request.body.email
     const requestPassword = request.body.password
@@ -17,21 +18,21 @@ router.post('/register', async (request, response) => {
     ) {
         return response.status(400).json({
             message: 'Please Provide Valid Credentials',
-            code: 'CREDENTIALS_INCOMPLETE',
+            errorCode: 'CREDENTIALS_INCOMPLETE',
         })
     }
 
     if (!emailValidator.validate(requestMail)) {
         return response.status(400).json({
             message: 'Please Provide Valid Email Address',
-            code: 'INVALID_EMAIL_ADDRESS',
+            errorCode: 'INVALID_EMAIL_ADDRESS',
         })
     }
 
     if (requestPassword.length < 8) {
         return response.status(400).json({
             message: 'Please enter password more than or equal to 8 characters',
-            code: 'PASSWORD_LENGTH_SHORT',
+            errorCode: 'PASSWORD_LENGTH_SHORT',
         })
     }
 
@@ -75,6 +76,55 @@ router.post('/register', async (request, response) => {
             }
         })
     } catch (error) {
+        response.status(500).json(err)
+    }
+})
+
+// Login User Function
+router.post('/login', (request, response) => {
+    const loginEmail = request.body.email
+    const loginPassword = request.body.password
+
+    if (!loginEmail || loginEmail === "" || !loginPassword || loginPassword === "") {
+        return response.status(400).json({
+            errorCode: 'INVALID_CREDENTIALS',
+            message: 'Please Provide valid credentials',
+        })
+    }
+
+    try {
+        User.findOne({ email: loginEmail }, (err, user) => {
+            if (!user) {
+                return response.status(404).json({
+                    errorCode: 'INVALID_EMAIL',
+                    message: 'Invalid Email Address',
+                })
+            }
+
+            const hashedPassword = CryptoJS.AES.decrypt(
+                user.password,
+                process.env.PASS_AES_SEC_KEY,
+            )
+            const dbPassword = hashedPassword.toString(CryptoJS.enc.Utf8)
+
+            if (loginPassword !== dbPassword) {
+                response.status(403).json({
+                    errorCode: 'INVALID_PASSWORD',
+                    message: 'Invalid Password'
+                })
+            }
+
+            const accessToken = jwt.sign(
+                {
+                    id: user.id,
+                },
+                process.env.JWT_SEC_KEY,
+            )
+
+            const { password, ...others } = user._doc
+            response.status(201).json({ ...others, accessToken })
+        })
+    } catch (err) {
         response.status(500).json(err)
     }
 })
