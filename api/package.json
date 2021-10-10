@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "postinstall": "patch-package"
+    "postinstall": "npm run copyPatch",
+    "copyPatch": "rm -rf ./node_modules/whatwg-url/dist/encoding.js && cp -r encoding.js ./node_modules/whatwg-url/dist/encoding.js"
   },
   "author": "",
   "license": "ISC",
