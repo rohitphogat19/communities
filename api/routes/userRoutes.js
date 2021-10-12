@@ -1,15 +1,14 @@
 const router = require('express').Router()
 const multer = require('multer');
+const path = require('path');
 
 const Image = require("../models/FileSchema");
 const User = require("../models/User");
 
-var home = require("os").homedir();
-var mediaFolderPath = home + '/Documents/Other Dev/communities 2';
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, `${mediaFolderPath}/media/profiles/users`)
+        const dirPath = path.join(__dirname, "../../media/profiles/users");
+        cb(null, dirPath)
     },
     filename: function (req, file, cb) {
         const ext = file.mimetype.split("/")[1];
