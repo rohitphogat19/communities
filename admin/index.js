@@ -1,15 +1,17 @@
-const router = require('express').Router()
+const express = require("express");
 const multer = require('multer');
+const cors = require("cors");
 
-const Image = require("../models/FileSchema");
-const User = require("../models/User");
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use('/profiles/users', express.static('profiles/users'))
 
-var home = require("os").homedir();
-var mediaFolderPath = home + '/Documents/Other Dev/communities 2';
+app.listen(8802, console.log("Listening on Port 8802"),);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, `${mediaFolderPath}/media/profiles/users`)
+        cb(null, 'profiles/users')
     },
     filename: function (req, file, cb) {
         const ext = file.mimetype.split("/")[1];
@@ -20,7 +22,11 @@ const storage = multer.diskStorage({
 
 const uploadImg = multer({ storage: storage }).single('image');
 
-router.post("/updateprofileimage", function (req, res) {
+app.post("/check", function (req, res) {
+    res.status(200).json("Ok");
+})
+
+app.post("/updateprofileimage", function (req, res) {
     uploadImg(req, res, function (error) {
         if (error instanceof multer.MulterError) {
             // A Multer error occurred when uploading.
@@ -33,10 +39,6 @@ router.post("/updateprofileimage", function (req, res) {
             }
         }
 
-        var fullMediaUrl = mediaFolderPath + req.file.filename
-
-        res.status(200).json({ path: fullMediaUrl });
+        res.status(200).json({ path: req.file.filename });
     })
 })
-
-module.exports = router;

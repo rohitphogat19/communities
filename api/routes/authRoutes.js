@@ -94,7 +94,7 @@ router.post('/login', (request, response) => {
     }
 
     try {
-        User.findOne({ email: loginEmail }, (err, user) => {
+        User.findOne({ email: loginEmail.toLowerCase() }, (err, user) => {
             if (!user) {
                 return response.status(404).json({
                     errorCode: 'INVALID_EMAIL',
