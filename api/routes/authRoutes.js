@@ -69,6 +69,9 @@ router.post('/register', async (request, response) => {
                         id: savedUser.id,
                     },
                     process.env.JWT_SEC_KEY,
+                    {
+                        expiresIn: '30d'
+                    }
                 )
 
                 const { password, ...others } = savedUser._doc
@@ -120,6 +123,9 @@ router.post('/login', (request, response) => {
                     id: user.id,
                 },
                 process.env.JWT_SEC_KEY,
+                {
+                    expiresIn: '30d'
+                }
             )
 
             const { password, ...others } = user._doc
