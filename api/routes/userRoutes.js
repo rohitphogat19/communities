@@ -59,7 +59,7 @@ router.post("/updateprofileimage", verifyToken, function (req, res) {
                 return res.status(400).json(error);
             }
         }
-        var fullMediaUrl = process.env.MEDIA_SERVER_URL + "/media/profiles/users/" + req.file.filename
+        var fullMediaUrl = process.env.MEDIA_SERVER_URL + "/profiles/users/" + req.file.filename
         req.body.profileImageUrl = fullMediaUrl;
         try {
             await User.findByIdAndUpdate(userId, { $set: req.body }, { new: true });
