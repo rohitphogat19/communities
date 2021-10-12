@@ -2,6 +2,7 @@ const router = require('express').Router()
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs-extra')
 
 const Image = require("../models/FileSchema");
 const User = require("../models/User");
@@ -9,7 +10,10 @@ const { verifyToken, verifyTokenAndAuthorization } = require('./verifyJWT')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const dirPath = path.join(__dirname, "../../media/profiles/users");
+        const dirPath = path.join(__dirname, "../../../media/profiles/users");
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath);
+        }
         cb(null, dirPath)
     },
     filename: function (req, file, cb) {
