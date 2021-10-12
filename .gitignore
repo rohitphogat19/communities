@@ -106,3 +106,5 @@ dist
 # Other Directories
 media/profiles/users/*
 media/profiles/groups/*
+!media/profiles/groups/README.md
+!media/profiles/users/README.md
